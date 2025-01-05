@@ -5,7 +5,6 @@ import mc4.bo.code.repository.PricesRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -30,8 +29,9 @@ public class PriceService {
         this.priceRepository = priceRepository;
     }
 
-    public List<Prices> getApplicablePrice(LocalDateTime applicationDate, Integer productId, Integer brandId) {
-        List<Prices> applicablePrices = priceRepository.findApplicablePrices(applicationDate, productId, brandId);
-        return applicablePrices;
+    public Optional<Prices> getApplicablePrice(LocalDateTime applicationDate, Integer productId, Integer brandId) {
+        return priceRepository.findApplicablePrices(applicationDate, productId, brandId)
+                .stream()
+                .findFirst();
     }
 }

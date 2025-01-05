@@ -40,12 +40,11 @@ public class PricesController {
             @RequestParam Integer brandId) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime date = LocalDateTime.parse(applicationDate, formatter);
-        List<Prices> prices = new ArrayList<>();
         try {
-            prices = priceService.getApplicablePrice(date, productId, brandId);
+            return ResponseEntity.ok(priceService.getApplicablePrice(date, productId, brandId));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return ResponseEntity.ok(prices.stream().findFirst());
+        return ResponseEntity.notFound().build();
     }
 }
