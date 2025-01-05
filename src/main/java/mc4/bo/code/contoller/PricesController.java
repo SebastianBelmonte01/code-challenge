@@ -1,11 +1,15 @@
 package mc4.bo.code.contoller;
 
+import mc4.bo.code.repository.Prices;
 import mc4.bo.code.service.PriceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * -------------------------------------------------------------------------*
@@ -30,15 +34,18 @@ public class PricesController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getPrice(
+    public ResponseEntity<Optional<Prices>> getPrice(
             @RequestParam String applicationDate,
             @RequestParam Integer productId,
             @RequestParam Integer brandId) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime date = LocalDateTime.parse(applicationDate, formatter);
-
-        return priceService.getApplicablePrice(date, productId, brandId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        List<Prices> prices = new ArrayList<>();
+        try {
+            prices = priceService.getApplicablePrice(date, productId, brandId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(prices.stream().findFirst());
     }
 }
