@@ -1,7 +1,11 @@
 package mc4.bo.code.contoller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import mc4.bo.code.service.PriceService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * -------------------------------------------------------------------------*
@@ -19,4 +23,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/prices")
 public class PricesController {
+    private final PriceService priceService;
+
+    public PricesController(PriceService priceService) {
+        this.priceService = priceService;
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getPrice(
+            @RequestParam String applicationDate,
+            @RequestParam Integer productId,
+            @RequestParam Integer brandId) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime date = LocalDateTime.parse(applicationDate, formatter);
+
+        return priceService.getApplicablePrice(date, productId, brandId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
